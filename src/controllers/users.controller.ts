@@ -1,24 +1,31 @@
 //Controller are responsible for Handling the HTTP request and response
-import { getPool } from "../db/config";
-import {Request, Response} from "express"
+import { Request, Response } from "express";
 import * as userService from "../services/users.services";
 
-// get all users 
-export const getUsers = async(req: Request, res: Response) => {
-    try{
+// Get all customers or a single customer by ID
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const { Customer_ID } = req.query;
 
-        const customers = await userService.getUsers();
+    if (Customer_ID) {
+      const customer = await userService.getUserById(Number(Customer_ID));
 
-        res.status(200).json(customers)
+      if (!customer) {
+        return res.status(404).json({ message: "Customer not found" });
+      }
 
-    } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
+      return res.status(200).json(customer);
     }
 
+    // If no ID provided → get all
+    const customers = await userService.getUsers();
+    return res.status(200).json(customers);
+  } catch (error: any) {
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
 
-
-}
-
+//add customer 
 
 export const createUser = async (req: Request, res:Response) =>{
 

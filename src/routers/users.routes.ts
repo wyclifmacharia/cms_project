@@ -3,8 +3,8 @@ import * as usercontroller from '../controllers/users.controller';
 
 
  const userRoutes = (app:Express)=>{
-    app.get('/users', usercontroller.getUsers);
-    app.post('/addUser', usercontroller.createUser);
+    app.get('/customer', usercontroller.getUsers);
+    app.post('/addcustomer', usercontroller.createUser);
 
 
  }

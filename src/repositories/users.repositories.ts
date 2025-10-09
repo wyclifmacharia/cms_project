@@ -7,11 +7,13 @@ export const getUsers = async() => {
     return result.recordset;
 }
 // getting customer by id
-//  export const getUserById = async(id: number) => {
-//      const pool = await getPool();
-//      const result = await pool.request().query(`SELECT * FROM Customer WHERE Id = ${id}`);
-//      return result.recordset[0];
-// }
+ export const getUserById = async(Customer_ID: number) => {
+     const pool = await getPool();
+     const result = await pool
+     .request()
+     .query(`SELECT * FROM Customer WHERE Customer_ID = ${Customer_ID}`);
+     return result.recordset[0];
+}
 //adding new Customer
 export  const addUser = async(Customer: any)=>{
 
