@@ -24,6 +24,14 @@ CREATE TABLE Customer (
     Address NVARCHAR(100) NOT NULL
 );
 
+--adding the password column on customer table COMMENT
+ALTER TABLE Customer
+ADD Password VARCHAR(MAX) NOT NULL;
+
+--adding the role column on customer table COMMENT
+ALTER TABLE Customer
+ADD Role VARCHAR(50) DEFAULT 'user';  
+
 -- BOOKING TABLE
 CREATE TABLE Booking (
     Booking_ID INT IDENTITY(1,1) PRIMARY KEY,
@@ -93,13 +101,13 @@ VALUES
 ('Fortuner', 'Toyota', 2023, 'Silver', 7500.00, 1);
 
 -- Insert into Customer
-INSERT INTO Customer (First_Name, Last_Name, Email, Phone_Number, Address)
+INSERT INTO Customer (First_Name, Last_Name, Email, Phone_Number, Address,Password)
 VALUES
-('John', 'mwangi', 'john.mwa@gmail.com', '0712345678', 'Nairobi'),
-('Mary', 'Wanjiku', 'mary.wanjiku@gmail.com', '0723456789', 'Mombasa'),
-('Peter', 'Kamau', 'peter.kamau@gmail.com', '0734567890', 'Kisumu'),
-('Lucy', 'Njeri', 'lucy.njeri@gmail.com', '0745678901', 'Nakuru'),
-('Brian', 'Otieno', 'brian.otieno@gmail.com', '0756789012', 'Eldoret');
+('John', 'mwangi', 'john.mwa@gmail.com', '0712345678', 'Nairobi','password1'),
+('Mary', 'Wanjiku', 'mary.wanjiku@gmail.com', '0723456789', 'Mombasa','password2'),
+('Peter', 'Kamau', 'peter.kamau@gmail.com', '0734567890', 'Kisumu','password3'),
+('Lucy', 'Njeri', 'lucy.njeri@gmail.com', '0745678901', 'Nakuru','password4'),
+('Brian', 'Otieno', 'brian.otieno@gmail.com', '0756789012', 'Eldoret','password5');
 
 -- Insert into Booking
 INSERT INTO Booking (Car_ID, Customer_ID, Rental_Start_Date, Rental_End_Date, TotalAmount)

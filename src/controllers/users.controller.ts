@@ -26,7 +26,6 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 //add customer 
-
 export const createUser = async (req: Request, res:Response) =>{
 
     try{
@@ -41,6 +40,33 @@ export const createUser = async (req: Request, res:Response) =>{
 
     }
 
-
-
 }
+//login customer 
+
+export const loginCustomer = async (req: Request, res: Response) => {
+    try {
+        const { Email, Password } = req.body;
+
+        const result = await userService.loginCustomer(Email, Password);
+        res.status(200).json(result);
+    } catch (error: any) {
+        if (error.message === 'User not found') {
+            res.status(404).json({ error: error.message });
+        } else if (error.message === 'Invalid credentials') {
+            res.status(401).json({ error: error.message });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+}
+
+//deleting customer 
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { Customer_ID } = req.params;
+        const customerIdNum = Number(Customer_ID);
+    }catch(error:any ){
+      res.status(500).json({error:"Internal server error"});
+
+    }
+  }
