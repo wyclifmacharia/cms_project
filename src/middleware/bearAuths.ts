@@ -31,12 +31,14 @@ dotenv.config();
 //     });
 // };
 
+//AUTHORIZATION MIDDLEWARE TO CHECK USER BASED ON ROLES 
+
 export const checkRole=(requiredRole:"admin"| "user"| "superadmin")=>{return (req:Request,res:Response,next:NextFunction):void=>{
     const authHeader = req.headers.authorization;
     //checking if authorization heade exist and gas a berere token 
     if(!authHeader|| !authHeader.startsWith('Bearer ')){    
          res.sendStatus(401).json({ message: "Unauthorized" });
-         return; // Unauthorized
+         return; 
     }
     //exrtacting the token 
     const token = authHeader.split(' ')[1];
@@ -74,12 +76,9 @@ export const checkRole=(requiredRole:"admin"| "user"| "superadmin")=>{return (re
             }
         } catch (error) {
             res.status(403).json({ message: "Forbidden" });
-            return; // Forbidden
+            return; 
+    
         }
-
-
-
-
 
     }
 

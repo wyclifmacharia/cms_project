@@ -1,9 +1,10 @@
 //CONTAINS THE BUSINESS LOGIC 
 import * as userRepository from '../repositories/users.repositories';
 import  bcrypt from "bcrypt";
-import { addUser, Customer } from '../types/users.type';
+import type { addUsers, Customer, updateUser } from '../types/users.type';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
+import { sendMail } from '../mailer/mailer';
         
 
 //listing all  customer 
@@ -23,17 +24,34 @@ export const getUserById = async( Customer_ID:number )=>{
 };
 
 //creating customer logic 
-export const createUser = async(Customer:addUser)=>{
+export const createUser = async(Customer:addUsers)=>{
     if (Customer.Password){
         Customer.Password = await bcrypt.hash(Customer.Password,10)
         console.log ("harshed passw", Customer.Password);
 
-
-
     }
 
-
     return await userRepository.addUser(Customer);
+
+    try {
+
+        await sendMail(
+            Customer.Email,
+            'Welcome to Our Service',
+            `<div>
+            <h1>Welcome, ${Customer.First_Name}!</h1>
+            <p>Thank you for registering with us. We're excited to have you on board!</p>
+            <p>If you have any questions, feel free to reach out to our support team.</p>
+            <br/>
+            <p>Best regards,<br/>The Team</p>       
+        
+            </div>`,
+        );
+       
+    } catch (error) {
+        console.error("Error sending email: ", error);
+    }
+    return Customer;
     
 } 
 //login cutomer logic
@@ -83,13 +101,26 @@ export const loginCustomer = async(Email:string, Password:string) =>{
 }
 
 //deleting customer logic
-export const deleteUser = async(Customer_ID:number) =>{
-
-    const customer = await userRepository.getUserById(Customer_ID);
-    if(!customer){
-        throw new Error("Customer not found");
+export const deleteCustomer = async (Customer_ID: number) => {
+    await ensureUserExists(Customer_ID);
+    return await userRepository.deleteCustomer(Customer_ID);
+}
+//updating customer logic
+export const updateCustomer = async (Customer_ID: number, Customer: updateUser) => {
+    if (Customer.Password){
+        Customer.Password = await bcrypt.hash(Customer.Password,10)
+        console.log ("harshed passw", Customer.Password);
     }
+    await ensureUserExists(Customer_ID);
+    return await userRepository.updateCustomer(Customer_ID, Customer);
+};
 
-    return await userRepository.deleteUserById(Customer_ID);
+//Reusable function to check if user exists-helper
+const ensureUserExists = async (Customer_ID: number) => {
+    const user = await userRepository.getUserById(Customer_ID);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    return user;
 }
 

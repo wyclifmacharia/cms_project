@@ -1,6 +1,7 @@
 //Controller are responsible for Handling the HTTP request and response
 import { Request, Response } from "express";
 import * as userService from "../services/users.services";
+import { Customer } from "../types/users.type";
 
 // Get all customers or a single customer by ID
 export const getUsers = async (req: Request, res: Response) => {
@@ -60,13 +61,49 @@ export const loginCustomer = async (req: Request, res: Response) => {
     }
 }
 
-//deleting customer 
-export const deleteUser = async (req: Request, res: Response) => {
-    try {
-        const { Customer_ID } = req.params;
-        const customerIdNum = Number(Customer_ID);
-    }catch(error:any ){
-      res.status(500).json({error:"Internal server error"});
+//updating customer
+export const updateCustomer = async(req:Request,res:Response)=>{
 
-    }
+  const customerId= parseInt(req.params.Customer_ID);
+  //bad requesti the customer not a number
+  if(isNaN(customerId)){
+    return res.status(400).json({error:"Invalid customer ID"});
   }
+  //else proceed to update
+    try{
+        const user = req.body;
+        const result = await userService.updateCustomer(customerId,user);
+        res.status(200).json(result);
+
+    }catch(error:any ){
+      if (error.message === 'Customer not found') {
+        res.status(404).json({ Message: 'user not found ' });
+    } else {
+        res.status(500).json({ error: error.message });
+    }
+     
+    
+  }
+};
+
+//deleting customer 
+export const deleteCustomer = async (req: Request, res: Response) => {
+  //console.log("DELETE called with ID:", req.params.Customer_ID);
+    const customerId = parseInt(req.params.Customer_ID);
+    //bad requesti the customer not a number
+    if (isNaN(customerId)) {
+        return res.status(400).json({ error: "Invalid customer ID" });
+      }
+    //else proceed to delete
+    try {
+        const result = await userService.deleteCustomer(customerId);
+        res.status(200).json(result);
+
+    } catch (error: any) {
+        if (error.message === 'Customer not found') {
+            res.status(404).json({ message: 'Customer not found' });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
+  };
