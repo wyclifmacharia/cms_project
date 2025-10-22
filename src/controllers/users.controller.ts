@@ -35,13 +35,33 @@ export const createUser = async (req: Request, res:Response) =>{
         res.status(201).json(result)
 
     }catch(error:any){
-        res.status(500).json({error:"Internal server error"});
-
-
+        res.status(500).json(error);
+        console.log("Error creating user: ", error.message);
 
     }
+  };
 
+    //verify user email
+    export const verifyUser = async (req: Request, res: Response) => {
+    try {
+        const { Email, code } = req.body;
+
+        if (!Email || !code) {
+            return res.status(400).json({ message: 'Email and code are required' });
+        }
+        const result = await userService.verifyUser(Email, code);
+        res.status(200).json(result);
+    } catch (error: any) {
+        if (error.message === 'User not found') {
+            res.status(404).json({ message: error.message });
+        } else if (error.message === 'Invalid verification code') {
+            res.status(400).json({ message: error.message });
+        } else {
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
+
 //login customer 
 
 export const loginCustomer = async (req: Request, res: Response) => {
@@ -90,7 +110,7 @@ export const updateCustomer = async(req:Request,res:Response)=>{
 export const deleteCustomer = async (req: Request, res: Response) => {
   //console.log("DELETE called with ID:", req.params.Customer_ID);
     const customerId = parseInt(req.params.Customer_ID);
-    //bad requesti the customer not a number
+    //bad request if the customer not a number
     if (isNaN(customerId)) {
         return res.status(400).json({ error: "Invalid customer ID" });
       }

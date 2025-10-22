@@ -5,8 +5,9 @@ import type { addUsers, Customer, updateUser } from '../types/users.type';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 import { sendMail } from '../mailer/mailer';
+import { emailTemplate } from '../mailer/emaiTemplate'; 
+dotenv.config(); // Load environment variables
         
-
 //listing all  customer 
 export const getUsers = async ()=> await userRepository.getUsers()
 //getting customer by id logic 
@@ -25,33 +26,25 @@ export const getUserById = async( Customer_ID:number )=>{
 
 //creating customer logic 
 export const createUser = async(Customer:addUsers)=>{
+    //hashing the password before storing in db
     if (Customer.Password){
         Customer.Password = await bcrypt.hash(Customer.Password,10)
-        console.log ("harshed passw", Customer.Password);
+        // console.log ("harshed passw", Customer.Password);
+
 
     }
+    // Storing the user in the database
 
-    return await userRepository.addUser(Customer);
+    const result = await userRepository.addUser(Customer);
+    //send welcome email to the cutomer using the template 
 
-    try {
-
-        await sendMail(
-            Customer.Email,
-            'Welcome to Our Service',
-            `<div>
-            <h1>Welcome, ${Customer.First_Name}!</h1>
-            <p>Thank you for registering with us. We're excited to have you on board!</p>
-            <p>If you have any questions, feel free to reach out to our support team.</p>
-            <br/>
-            <p>Best regards,<br/>The Team</p>       
-        
-            </div>`,
-        );
-       
-    } catch (error) {
-        console.error("Error sending email: ", error);
-    }
-    return Customer;
+    await sendMail(
+        Customer.Email,
+        'Welcome to CMS by wyclif',
+        emailTemplate.welcome(Customer.First_Name)
+    );
+    
+    return result;
     
 } 
 //login cutomer logic
@@ -122,5 +115,9 @@ const ensureUserExists = async (Customer_ID: number) => {
         throw new Error('User not found');
     }
     return user;
+}
+
+export function verifyUser(Email: any, code: any) {
+  throw new Error("Function not implemented.");
 }
 
